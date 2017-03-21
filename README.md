@@ -5,7 +5,7 @@ Can be used as base class for event-oriented libraries.
 
 ## Usage
 
-[![npm install jfObject](https://nodei.co/npm/jfObject.png?mini=true)](https://npmjs.org/package/jfObject/)
+[![npm install jfObject](https://nodei.co/npm/jf-object.png?mini=true)](https://npmjs.org/package/jf-object/)
 
 ### Objects as parameters
 
