@@ -13,7 +13,6 @@ const singletons = {};
  * @class     jf.Object
  * @extends   Events
  * @see       https://nodejs.org/api/events.html
- * @see       https://github.com/sindresorhus/deep-assign
  */
 module.exports = class jfObject extends Events {
     /**
