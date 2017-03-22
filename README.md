@@ -5,7 +5,7 @@ Can be used as base class for event-oriented libraries.
 
 ## Usage
 
-[![npm install jfObject](https://nodei.co/npm/jf-object.png?mini=true)](https://npmjs.org/package/jf-object/)
+[![npm install jfObject](https://nodei.co/npm/jf-object.png?compact=true)](https://npmjs.org/package/jf-object/)
 
 ### Objects as parameters
 
@@ -36,7 +36,7 @@ console.log(obj.toJSON()); // { a : { b : 1, c : 3 }, d : { e : { f : 5 } } }
 
 ### Dot notation
 
-You can use dot notation for to assign/retrieve/test nested objects.
+You can use dot notation in order to assign/retrieve/test nested objects.
 
 ```js
 const obj = new jfObject();
@@ -109,7 +109,7 @@ for (let prop of obj)
 
 ### Keys & values
 
-If you need split object into keys and values, you can use `toArray` or `toObject` methods.
+If you need to split object into keys and values, you can use `toArray` or `toObject` methods.
 
 
 ```js
@@ -138,8 +138,8 @@ obj.emit('test-event', { a : 1 });
 ### Singleton
 
 If you need to share the same instance between differents external modules,
-you can use static method `i()` for to retrieve the same instance anywhere
-in the app.
+you can use static method `i()` in order to retrieve the same instance
+anywhere in the app.
 
 ```js
 class User extends jfObject {

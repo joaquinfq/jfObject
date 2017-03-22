@@ -1,18 +1,18 @@
 {
-    "version"      : "0.1.1",
-    "name"         : "jf-object",
-    "author"       : "Joaquín Fernández",
-    "description"  : "Class providing events, dot path syntax for properties, JSON serialization, singletons and more.",
-    "keywords"     : [
+    "version"     : "0.1.2",
+    "name"        : "jf-object",
+    "author"      : "Joaquín Fernández",
+    "description" : "Class providing events, dot path syntax for properties, JSON serialization, singletons and more.",
+    "keywords"    : [
         "assign",
         "class",
         "events",
         "jfObject",
         "object"
     ],
-    "license"      : "MIT",
-    "homepage"     : "http://www.joaquinfernandez.net",
-    "repository"   : {
+    "license"     : "MIT",
+    "homepage"    : "http://www.joaquinfernandez.net",
+    "repository"  : {
         "type" : "git",
         "url"  : "https://github.com/joaquinfq/jfObject"
     },
