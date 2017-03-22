@@ -16,37 +16,6 @@ const singletons = {};
  */
 module.exports = class jfObject extends Events {
     /**
-     * Iterador que permite usar un bucle for..of
-     * para iterar sobre la instancia.
-     *
-     * @return {Object}
-     */
-    [Symbol.iterator]()
-    {
-        let _current = 0;
-        let _keys    = [];
-        for (let _property in this)
-        {
-            // Eliminamos las propiedades privadas y protegidas.
-            if (_property[0] !== '_' && typeof this[_property] !== 'function')
-            {
-                _keys.push(_property);
-            }
-        }
-        let _length = _keys.length;
-        return {
-            next()
-            {
-                const _value = _keys[_current++];
-                return {
-                    done  : _current >= _length,
-                    value : _value
-                }
-            }
-        }
-    }
-
-    /**
      * Constructor de la clase.
      *
      * @param {...Object} objs Listado de objetos a aplicar a la instancia.
@@ -59,6 +28,36 @@ module.exports = class jfObject extends Events {
         // El módulo `domain` está obsoleto en NodeJS, así que eliminamos la propiedad.
         delete this.domain;
         this.assign(...objs);
+    }
+
+    /**
+     * Iterador que permite usar un bucle for..of
+     * para iterar sobre la instancia.
+     *
+     * @return {Object}
+     */
+    [Symbol.iterator]()
+    {
+        let _current = 0;
+        let _keys    = [];
+        for (let _property in this)
+        {
+            // Eliminamos las propiedades privadas y protegidas.
+            if (_property[0] !== '_' && typeof this[_property] !== 'function' && this[_property] !== undefined)
+            {
+                _keys.push(_property);
+            }
+        }
+        return {
+            next()
+            {
+                const _key = _keys[_current++];
+                return {
+                    done  : _key === undefined,
+                    value : _key
+                }
+            }
+        }
     }
 
     /**
@@ -181,6 +180,31 @@ module.exports = class jfObject extends Events {
     }
 
     /**
+     * Separa el objeto en 2 elementos, claves y valores.
+     * El objeto devuelto tiene una clave `keys` con el listado de claves
+     * presentes en la instancia y otra clave `values` con sus respectivos
+     * valores el mismo orden.
+     *
+     * @method split
+     *
+     * @return {{keys: Array, values: Array}} Objeto convertido.
+     */
+    split()
+    {
+        const _keys   = [];
+        const _values = [];
+        for (let _prop of this)
+        {
+            _keys.push(_prop);
+            _values.push(this[_prop]);
+        }
+        return {
+            keys   : _keys,
+            values : _values
+        }
+    }
+
+    /**
      * Convierte el objeto en un array.
      * El índice 0 de cada elemento es la clave y el índice 1 es su valor..
      *
@@ -222,31 +246,6 @@ module.exports = class jfObject extends Events {
             }
         }
         return _result;
-    }
-
-    /**
-     * Separa el objeto en 2 elementos, claves y valores.
-     * El objeto devuelto tiene una clave `keys` con el listado de claves
-     * presentes en la instancia y otra clave `values` con sus respectivos
-     * valores el mismo orden.
-     *
-     * @method toObject
-     *
-     * @return {Object} Objeto convertido.
-     */
-    toObject()
-    {
-        const _keys   = [];
-        const _values = [];
-        for (let _prop of this)
-        {
-            _keys.push(_prop);
-            _values.push(this[_prop]);
-        }
-        return {
-            keys   : _keys,
-            values : _values
-        }
     }
 
     /**

@@ -165,6 +165,48 @@ function checkSingleton()
     //@formatter:on
 }
 /**
+ * Verifica que se divida en un objeto con las claves keys y values.
+ */
+function checkSplit()
+{
+    assert.deepEqual(
+        new jfObject(
+            {
+                a : 1,
+                b : 2,
+                c : 3,
+                d : 4
+            }
+        ).split(),
+        {
+            keys   : ['a', 'b', 'c', 'd'],
+            values : [1, 2, 3, 4]
+        }
+    );
+}
+/**
+ * Verifica que se convierta en un array teniendo en el índice 0 la clave y en el 1 su valor.
+ */
+function checkToArray()
+{
+    assert.deepEqual(
+        new jfObject(
+            {
+                a : 1,
+                b : 2,
+                c : 3,
+                d : 4
+            }
+        ).toArray(),
+        [
+            ['a', 1],
+            ['b', 2],
+            ['c', 3],
+            ['d', 4]
+        ]
+    );
+}
+/**
  * Verifica que las propiedades protegidas y privadas no se exporten en JSON y que el paso de un filtro funcione.
  */
 function checkToJson()
@@ -210,5 +252,7 @@ checkEvents();
 checkIterator();
 checkSetProperties();
 checkSingleton();
+checkSplit();
+checkToArray();
 checkToJson();
 checkToString();

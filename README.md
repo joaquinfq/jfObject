@@ -109,7 +109,7 @@ for (let prop of obj)
 
 ### Keys & values
 
-If you need to split object into keys and values, you can use `toArray` or `toObject` methods.
+If you need to split object into keys and values, you can use `split` or `toArray` methods.
 
 
 ```js
@@ -121,8 +121,8 @@ const obj = new jfObject(
         h : 4
     }
 );
+console.log(obj.split()); // { keys: [ 'a', 'c', 'f', 'h' ], values: [ 1, 2, 3, 4 ] }
 console.log(obj.toArray());  // [ [ 'a', 1 ], [ 'c', 2 ], [ 'f', 3 ], [ 'h', 4 ] ]
-console.log(obj.toObject()); // { keys: [ 'a', 'c', 'f', 'h' ], values: [ 1, 2, 3, 4 ] }
 ```
 
 ### Events
