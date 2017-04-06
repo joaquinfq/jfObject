@@ -232,8 +232,12 @@ module.exports = class jfObject extends Events {
      *
      * @return {Object} Objeto serializado.
      */
-    toJSON(filter = () => true)
+    toJSON(filter)
     {
+        if (typeof filter !== 'function')
+        {
+            filter = () => true;
+        }
         let _result = {};
         for (let _property of this)
         {
