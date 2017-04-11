@@ -109,6 +109,20 @@ module.exports = class jfObject extends Events {
     }
 
     /**
+     * Ejecuta de manera síncrona cada unos de los callbacks registrados para el evento
+     * en el orden en que fueron registrados.
+     * También se llama a todos los que se han registrado al evento `*`.
+     *
+     * @param {String} name   Nombre del evento.
+     * @param {Array}  params Parámetros del evento.
+     */
+    emit(name, ...params)
+    {
+        super.emit(name, ...params);
+        super.emit('*', name, ...params);
+    }
+
+    /**
      * Devuelve el valor correspondiente a la ruta especificada.
      *
      * @method get
