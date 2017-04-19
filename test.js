@@ -1,6 +1,5 @@
 const assert   = require('assert');
-const Events   = require('events');
-const jfObject = require('./index');
+const jfObject = require('./jf-object').default;
 /**
  * Verifica que los objetos pasados al constructor sean fusionados con la instancia.
  */
@@ -87,7 +86,6 @@ function checkEvents()
 {
     let _isCalled   = false;
     const _instance = new jfObject();
-    assert.ok(_instance instanceof Events);
     _instance.once('done', () => _isCalled = true);
     _instance.emit('done');
     assert.ok(_isCalled);

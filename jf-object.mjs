@@ -1,5 +1,10 @@
-const dotProp    = require('dot-prop');
-const Events     = require('events');
+import dotProp from 'dot-prop';
+import Events  from 'events';
+/**
+ * Listado de singletons instanciados.
+ *
+ * @type {Object}
+ */
 const singletons = {};
 /**
  * Clase que aporta las siguientes funcionalidades:
@@ -14,7 +19,8 @@ const singletons = {};
  * @extends   Events
  * @see       https://nodejs.org/api/events.html
  */
-module.exports = class jfObject extends Events {
+export default class jfObject extends Events
+{
     /**
      * Constructor de la clase.
      *
@@ -34,12 +40,12 @@ module.exports = class jfObject extends Events {
      * Iterador que permite usar un bucle for..of
      * para iterar sobre la instancia.
      *
-     * @return {Object}
+     * @return {Object} Configuración a usar por el iterador.
      */
     [Symbol.iterator]()
     {
         let _current = 0;
-        let _keys    = [];
+        const _keys  = [];
         for (let _property in this)
         {
             // Eliminamos las propiedades privadas y protegidas.
@@ -55,9 +61,9 @@ module.exports = class jfObject extends Events {
                 return {
                     done  : _key === undefined,
                     value : _key
-                }
+                };
             }
-        }
+        };
     }
 
     /**
@@ -72,35 +78,42 @@ module.exports = class jfObject extends Events {
         const _isObject = jfObject.isObject;
         for (let _obj of objs)
         {
-            if (jfObject.isObject(_obj))
+            if (_isObject(_obj))
             {
                 for (let _prop in _obj)
                 {
-                    let _value = _obj[_prop];
-                    if (_obj.hasOwnProperty(_prop) && typeof _value !== 'function')
+                    if (_obj.hasOwnProperty(_prop))
                     {
-                        if (_isObject(_value))
+                        const _value = _obj[_prop];
+                        if (typeof _value !== 'function')
                         {
-                            const _current = this[_prop];
-                            if (_isObject(_current))
+                            if (_isObject(_value))
                             {
-                                if (_current instanceof jfObject)
+                                const _current = this[_prop];
+                                if (_isObject(_current))
                                 {
-                                    _current.assign(_value);
+                                    if (_current instanceof jfObject)
+                                    {
+                                        _current.assign(_value);
+                                    }
+                                    else
+                                    {
+                                        this[_prop] = new jfObject(_current, _value);
+                                    }
+                                }
+                                else if (_value.constructor === Object)
+                                {
+                                    this[_prop] = new jfObject(_value);
                                 }
                                 else
                                 {
-                                    this[_prop] = new jfObject(_current, _value);
+                                    this[_prop] = _value;
                                 }
                             }
                             else
                             {
-                                this[_prop] = new jfObject(_value);
+                                this[_prop] = _value;
                             }
-                        }
-                        else
-                        {
-                            this[_prop] = _value;
                         }
                     }
                 }
@@ -215,7 +228,7 @@ module.exports = class jfObject extends Events {
         return {
             keys   : _keys,
             values : _values
-        }
+        };
     }
 
     /**
@@ -233,7 +246,7 @@ module.exports = class jfObject extends Events {
         {
             _items.push([_prop, this[_prop]]);
         }
-        return _items
+        return _items;
     }
 
     /**
@@ -252,7 +265,7 @@ module.exports = class jfObject extends Events {
         {
             filter = () => true;
         }
-        let _result = {};
+        const _result = {};
         for (let _property of this)
         {
             const _value = this[_property];
@@ -283,7 +296,7 @@ module.exports = class jfObject extends Events {
      *
      * AVISO: Todas las clases anónimas compartirán el mismo singleton.
      *
-     * @return {jf.Object}
+     * @return {jf.Object} Instancia a usar.
      */
     static i()
     {
@@ -299,4 +312,4 @@ module.exports = class jfObject extends Events {
     {
         return obj && typeof obj === 'object' && !Array.isArray(obj);
     }
-};
+}
