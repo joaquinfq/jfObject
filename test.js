@@ -1,35 +1,37 @@
-const assert   = require('assert');
-const jfObject = require('./jf-object').default;
+const assert = require('assert');
 /**
- * Verifica que los objetos pasados al constructor sean fusionados con la instancia.
+ * Verifica que los objetos sean fusionados con la instancia.
  */
-function checkConstructor()
+function checkAssign()
 {
-    assert.deepEqual(
+    runAssert(
+        'deepEqual',
         {
             a : {
                 b : 1,
                 c : 3
             }
         },
-        new jfObject(
-            {
-                a : {
-                    b : 0
+        new jfObject()
+            .assign(
+                {
+                    a : {
+                        b : 0
+                    }
+                },
+                {
+                    a : {
+                        b : 1,
+                        c : 2
+                    }
+                },
+                {
+                    a : {
+                        c : 3
+                    }
                 }
-            },
-            {
-                a : {
-                    b : 1,
-                    c : 2
-                }
-            },
-            {
-                a : {
-                    c : 3
-                }
-            }
-        ).toJSON()
+            )
+            .toJSON()
     );
 }
 /**
@@ -41,7 +43,8 @@ function checkDotProp()
 {
     const _instance = new jfObject();
     _instance.set('a.b.c.d', 10);
-    assert.deepEqual(
+    runAssert(
+        'deepEqual',
         _instance.a,
         {
             b : {
@@ -51,7 +54,8 @@ function checkDotProp()
             }
         }
     );
-    assert.deepEqual(
+    runAssert(
+        'deepEqual',
         _instance.get('a'),
         {
             b : {
@@ -61,7 +65,8 @@ function checkDotProp()
             }
         }
     );
-    assert.deepEqual(
+    runAssert(
+        'deepEqual',
         _instance.get('a.b'),
         {
             c : {
@@ -69,13 +74,14 @@ function checkDotProp()
             }
         }
     );
-    assert.deepEqual(
+    runAssert(
+        'deepEqual',
         _instance.get('a.b.c'),
         {
             d : 10
         }
     );
-    assert.equal(_instance.get('a.b.c.d'), 10);
+    runAssert('equal', _instance.get('a.b.c.d'), 10);
 }
 /**
  * Verifica que se haya extendido de Events.
@@ -88,7 +94,7 @@ function checkEvents()
     const _instance = new jfObject();
     _instance.once('done', () => _isCalled = true);
     _instance.emit('done');
-    assert.ok(_isCalled);
+    runAssert('ok', _isCalled);
 }
 /**
  * Verifica que se pueda iterar usando for..of.
@@ -102,37 +108,39 @@ function checkIterator()
         f : 3,
         h : 4
     };
-    const _instance = new jfObject(_expected);
+    const _instance = new jfObject().assign(_expected);
     for (let _p of _instance)
     {
         _actual[_p] = _instance[_p];
     }
-    assert.deepEqual(_actual, _expected);
+    runAssert('deepEqual', _actual, _expected);
 }
 /**
  * Verifica que solamente se asignen las propiedades ya existentes.
  */
 function checkSetProperties()
 {
-    const _instance = new jfObject(
-        {
-            a : 1,
-            b : 2
-        }
-    );
-    _instance.setProperties(
-        {
-            a : 6,
-            c : 7, // Se debe ignorar ya que no está definida en la clase
-            d : 8  // Se debe ignorar ya que no está definida en la clase
-        }
-    );
-    assert.deepEqual(
+    runAssert(
+        'deepEqual',
         {
             a : 6,
             b : 2
         },
-        _instance.toJSON()
+        new jfObject()
+            .assign(
+                {
+                    a : 1,
+                    b : 2
+                }
+            )
+            .setProperties(
+                {
+                    a : 6,
+                    c : 7, // Se debe ignorar ya que no está definida en la clase
+                    d : 8  // Se debe ignorar ya que no está definida en la clase
+                }
+            )
+            .toJSON()
     );
 }
 /**
@@ -141,25 +149,25 @@ function checkSetProperties()
 function checkSingleton()
 {
     let _instance = jfObject.i();
-    assert.ok(_instance instanceof jfObject);
-    assert.equal(_instance, jfObject.i());
+    runAssert('ok', _instance instanceof jfObject);
+    runAssert('equal', _instance, jfObject.i());
     //-------------------------------------------------------------------------
     //@formatter:off
     class jfObjectChild extends jfObject {};
     _instance = jfObjectChild.i();
-    assert.ok(_instance instanceof jfObject);
-    assert.ok(_instance instanceof jfObjectChild);
-    assert.equal(_instance, jfObjectChild.i());
-    assert.notEqual(_instance, jfObject.i());
+    runAssert('ok', _instance instanceof jfObject);
+    runAssert('ok', _instance instanceof jfObjectChild);
+    runAssert('equal', _instance, jfObjectChild.i());
+    runAssert('notEqual', _instance, jfObject.i());
     //-------------------------------------------------------------------------
     class jfObjectChildChild extends jfObjectChild {};
     _instance = jfObjectChildChild.i();
-    assert.ok(_instance instanceof jfObject);
-    assert.ok(_instance instanceof jfObjectChild);
-    assert.ok(_instance instanceof jfObjectChildChild);
-    assert.equal(_instance, jfObjectChildChild.i());
-    assert.notEqual(_instance, jfObjectChild.i());
-    assert.notEqual(_instance, jfObject.i());
+    runAssert('ok', _instance instanceof jfObject);
+    runAssert('ok', _instance instanceof jfObjectChild);
+    runAssert('ok', _instance instanceof jfObjectChildChild);
+    runAssert('equal', _instance, jfObjectChildChild.i());
+    runAssert('notEqual', _instance, jfObjectChild.i());
+    runAssert('notEqual', _instance, jfObject.i());
     //@formatter:on
 }
 /**
@@ -167,15 +175,18 @@ function checkSingleton()
  */
 function checkSplit()
 {
-    assert.deepEqual(
-        new jfObject(
-            {
-                a : 1,
-                b : 2,
-                c : 3,
-                d : 4
-            }
-        ).split(),
+    runAssert(
+        'deepEqual',
+        new jfObject()
+            .assign(
+                {
+                    a : 1,
+                    b : 2,
+                    c : 3,
+                    d : 4
+                }
+            )
+            .split(),
         {
             keys   : ['a', 'b', 'c', 'd'],
             values : [1, 2, 3, 4]
@@ -187,15 +198,18 @@ function checkSplit()
  */
 function checkToArray()
 {
-    assert.deepEqual(
-        new jfObject(
-            {
-                a : 1,
-                b : 2,
-                c : 3,
-                d : 4
-            }
-        ).toArray(),
+    runAssert(
+        'deepEqual',
+        new jfObject()
+            .assign(
+                {
+                    a : 1,
+                    b : 2,
+                    c : 3,
+                    d : 4
+                }
+            )
+            .toArray(),
         [
             ['a', 1],
             ['b', 2],
@@ -209,15 +223,18 @@ function checkToArray()
  */
 function checkToJson()
 {
-    assert.deepEqual(
-        new jfObject(
-            {
-                property1  : 1,
-                property2  : 2,
-                _protected : 3,
-                __private  : 4
-            }
-        ).toJSON(),
+    runAssert(
+        'deepEqual',
+        new jfObject()
+            .assign(
+                {
+                    property1  : 1,
+                    property2  : 2,
+                    _protected : 3,
+                    __private  : 4
+                }
+            )
+            .toJSON(),
         {
             property1 : 1,
             property2 : 2
@@ -230,27 +247,40 @@ function checkToJson()
 function checkToString()
 {
     let _instance = new jfObject();
-    assert.equal(_instance.toString(), '[class jfObject]');
+    runAssert('equal', _instance.toString(), '[class jfObject]');
     //@formatter:off
     class jfObjectChild extends jfObject {};
     _instance = new jfObjectChild();
-    assert.equal(_instance.toString(), '[class jfObjectChild]');
+    runAssert('equal', _instance.toString(), '[class jfObjectChild]');
     //
     class jfObjectChildChild extends jfObjectChild {};
     _instance = new jfObjectChildChild();
-    assert.equal(_instance.toString(), '[class jfObjectChildChild]');
+    runAssert('equal', _instance.toString(), '[class jfObjectChildChild]');
     //@formatter:on
+}
+function runAssert(fn, ...args)
+{
+    assert[fn](...args);
+    ++numAssertions;
 }
 //------------------------------------------------------------------------------
 // Inicio de las pruebas
 //------------------------------------------------------------------------------
-checkConstructor();
-checkDotProp();
-checkEvents();
-checkIterator();
-checkSetProperties();
-checkSingleton();
-checkSplit();
-checkToArray();
-checkToJson();
-checkToString();
+let jfObject, numAssertions = 0;
+
+[ './jf-object', './jf-object.min'].forEach(
+    file => {
+        jfObject = require(file).default;
+        checkAssign();
+        checkDotProp();
+        checkEvents();
+        checkIterator();
+        checkSetProperties();
+        checkSingleton();
+        checkSplit();
+        checkToArray();
+        checkToJson();
+        checkToString();
+    }
+);
+console.log('Total aserciones: %d', numAssertions);

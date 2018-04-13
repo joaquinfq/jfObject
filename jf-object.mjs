@@ -1,4 +1,4 @@
-import dotProp from 'dot-prop';
+import propSep from 'prop-sep';
 import Events  from 'events';
 /**
  * Listado de singletons instanciados.
@@ -33,7 +33,7 @@ export default class jfObject extends Events
         super();
         // El módulo `domain` está obsoleto en NodeJS, así que eliminamos la propiedad.
         delete this.domain;
-        this.assign(...objs);
+        objs.forEach(obj => this.setProperties(obj));
     }
 
     /**
@@ -46,14 +46,17 @@ export default class jfObject extends Events
     {
         let _current = 0;
         const _keys  = [];
-        for (let _property in this)
+        for (const _property in this)
         {
             // Eliminamos las propiedades privadas y protegidas.
+            // noinspection JSUnfilteredForInLoop
             if (_property[0] !== '_' && typeof this[_property] !== 'function' && this[_property] !== undefined)
             {
+                // noinspection JSUnfilteredForInLoop
                 _keys.push(_property);
             }
         }
+
         return {
             next()
             {
@@ -72,15 +75,17 @@ export default class jfObject extends Events
      * @method assign
      *
      * @param {...Object} objs Listado de objetos a aplicar a la instancia.
+     *
+     * @return {jfObject} La instancia actual.
      */
     assign(...objs)
     {
         const _isObject = jfObject.isObject;
-        for (let _obj of objs)
+        for (const _obj of objs)
         {
             if (_isObject(_obj))
             {
-                for (let _prop in _obj)
+                for (const _prop in _obj)
                 {
                     if (_obj.hasOwnProperty(_prop))
                     {
@@ -119,6 +124,8 @@ export default class jfObject extends Events
                 }
             }
         }
+
+        return this;
     }
 
     /**
@@ -128,11 +135,15 @@ export default class jfObject extends Events
      *
      * @param {String} name   Nombre del evento.
      * @param {Array}  params Parámetros del evento.
+     *
+     * @return {jfObject} La instancia actual.
      */
     emit(name, ...params)
     {
         super.emit(name, ...params);
         super.emit('*', name, ...params);
+
+        return this;
     }
 
     /**
@@ -145,11 +156,11 @@ export default class jfObject extends Events
      *
      * @return {*} Valor de la ruta.
      *
-     * @see https://github.com/sindresorhus/dot-prop
+     * @see https://github.com/joaquinfq/prop-sep
      */
     get(path, defValue)
     {
-        return dotProp.get(this, path, defValue);
+        return propSep.get(this, path, defValue);
     }
 
     /**
@@ -161,11 +172,27 @@ export default class jfObject extends Events
      *
      * @return {Boolean} `true` si la ruta existe.
      *
-     * @see https://github.com/sindresorhus/dot-prop
+     * @see https://github.com/joaquinfq/prop-sep
      */
     has(path)
     {
-        return dotProp.has(this, path);
+        return propSep.has(this, path);
+    }
+
+    /**
+     * Verifica si la ruta a una propiedad está definida.
+     *
+     * @method has
+     *
+     * @param {String} path Ruta de la propiedad a obtener usando `.` para separar las claves.
+     *
+     * @return {Boolean} `true` si la ruta existe.
+     *
+     * @see https://github.com/joaquinfq/prop-sep
+     */
+    remove(path)
+    {
+        return propSep.remove(this, path);
     }
 
     /**
@@ -176,11 +203,15 @@ export default class jfObject extends Events
      * @param {String} path  Ruta de la propiedad a obtener usando `.` para separar las claves.
      * @param {*}      value Valor a asignar.
      *
-     * @see https://github.com/sindresorhus/dot-prop
+     * @return {jfObject} La instancia actual.
+     *
+     * @see https://github.com/joaquinfq/prop-sep
      */
     set(path, value)
     {
-        dotProp.set(this, path, value);
+        propSep.set(this, path, value);
+
+        return this;
     }
 
     /**
@@ -191,12 +222,14 @@ export default class jfObject extends Events
      * @method setProperties
      *
      * @param {Object} values Objecto con las propiedades a aplicar a la instancia.
+     *
+     * @return {jfObject} La instancia actual.
      */
     setProperties(values)
     {
         if (values && typeof values === 'object')
         {
-            for (let _property of Object.keys(values))
+            for (const _property of Object.keys(values))
             {
                 if (this[_property] !== undefined)
                 {
@@ -204,6 +237,8 @@ export default class jfObject extends Events
                 }
             }
         }
+
+        return this;
     }
 
     /**
@@ -220,11 +255,12 @@ export default class jfObject extends Events
     {
         const _keys   = [];
         const _values = [];
-        for (let _prop of this)
+        for (const _prop of this)
         {
             _keys.push(_prop);
             _values.push(this[_prop]);
         }
+
         return {
             keys   : _keys,
             values : _values
@@ -233,7 +269,8 @@ export default class jfObject extends Events
 
     /**
      * Convierte el objeto en un array.
-     * El índice 0 de cada elemento es la clave y el índice 1 es su valor..
+     * El índice 0 de cada elemento es la clave y el índice 1 es su valor.
+     * Útil si se quiere convertir en un `Map`.
      *
      * @method toArray
      *
@@ -242,10 +279,11 @@ export default class jfObject extends Events
     toArray()
     {
         const _items = [];
-        for (let _prop of this)
+        for (const _prop of this)
         {
             _items.push([_prop, this[_prop]]);
         }
+
         return _items;
     }
 
@@ -266,7 +304,7 @@ export default class jfObject extends Events
             filter = () => true;
         }
         const _result = {};
-        for (let _property of this)
+        for (const _property of this)
         {
             const _value = this[_property];
             if (_value !== undefined && filter(_property, _value))
@@ -276,6 +314,7 @@ export default class jfObject extends Events
                     : _value;
             }
         }
+
         return _result;
     }
 
@@ -308,8 +347,15 @@ export default class jfObject extends Events
         return singletons[_name];
     }
 
+    /**
+     * Indica si el valor especificado es un `Object` excluyendo los `Array`.
+     *
+     * @param {*} obj Objeto a verificar.
+     *
+     * @return {Boolean} `true` si el valor es un objeto.
+     */
     static isObject(obj)
     {
-        return obj && typeof obj === 'object' && !Array.isArray(obj);
+        return Boolean(obj) && typeof obj === 'object' && !Array.isArray(obj);
     }
 }
