@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "name": "jf-object",
     "author": "Joaquín Fernández",
     "description": "Class providing events, dot path syntax for properties, JSON serialization, singletons and more.",
@@ -23,6 +23,7 @@
         "test": "node test"
     },
     "dependencies": {
+        "babel-runtime": "^6.26.0",
         "prop-sep": "^1.0.0"
     },
     "devDependencies": {
