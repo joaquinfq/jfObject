@@ -309,7 +309,7 @@ export default class jfObject extends Events
             {
                 if (value && _type === 'object')
                 {
-                    if (Array.isArray(value) && value.length)
+                    if (Array.isArray(value))
                     {
                         value = value.map(v => _transform(property, v));
                     }

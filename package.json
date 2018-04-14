@@ -1,5 +1,5 @@
 {
-    "version": "1.0.2",
+    "version": "1.0.3",
     "name": "jf-object",
     "author": "Joaquín Fernández",
     "description": "Class providing events, dot path syntax for properties, JSON serialization, singletons and more.",

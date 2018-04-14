@@ -480,7 +480,7 @@ var jfObject = function (_Events) {
                 var _type = typeof value === 'undefined' ? 'undefined' : (0, _typeof3.default)(value);
                 if (_type !== 'function' && filter(property, value)) {
                     if (value && _type === 'object') {
-                        if (Array.isArray(value) && value.length) {
+                        if (Array.isArray(value)) {
                             value = value.map(function (v) {
                                 (0, _newArrowCheck3.default)(this, _this3);
                                 return _transform(property, v);
