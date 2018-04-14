@@ -301,21 +301,42 @@ export default class jfObject extends Events
     {
         if (typeof filter !== 'function')
         {
-            filter = () => true;
+            filter = (property, value) => property[0] !== '_' && value !== undefined;
         }
-        const _result = {};
-        for (const _property of this)
-        {
-            const _value = this[_property];
-            if (_value !== undefined && filter(_property, _value))
+        const _transform = (property, value) => {
+            const _type = typeof value;
+            if (_type !== 'function' && filter(property, value))
             {
-                _result[_property] = _value instanceof jfObject
-                    ? _value.toJSON(filter)
-                    : _value;
+                if (value && _type === 'object')
+                {
+                    if (Array.isArray(value) && value.length)
+                    {
+                        value = value.map(v => _transform(property, v));
+                    }
+                    else
+                    {
+                        const _result = {};
+                        for (const _property in value)
+                        {
+                            const _value = _transform(_property, value[_property]);
+                            if (_value !== undefined)
+                            {
+                                _result[_property] = _value;
+                            }
+                        }
+                        value = _result;
+                    }
+                }
             }
-        }
+            else
+            {
+                value = undefined;
+            }
 
-        return _result;
+            return value;
+        };
+
+        return _transform('***************', this);
     }
 
     /**

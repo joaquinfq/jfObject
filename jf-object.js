@@ -16,9 +16,9 @@ var _getIterator2 = require('babel-runtime/core-js/get-iterator');
 
 var _getIterator3 = _interopRequireDefault(_getIterator2);
 
-var _iterator6 = require('babel-runtime/core-js/symbol/iterator');
+var _iterator5 = require('babel-runtime/core-js/symbol/iterator');
 
-var _iterator7 = _interopRequireDefault(_iterator6);
+var _iterator6 = _interopRequireDefault(_iterator5);
 
 var _newArrowCheck2 = require('babel-runtime/helpers/newArrowCheck');
 
@@ -118,7 +118,7 @@ var jfObject = function (_Events) {
 
 
     (0, _createClass3.default)(jfObject, [{
-        key: _iterator7.default,
+        key: _iterator6.default,
         value: function value() {
             var _current = 0;
             var _keys = [];
@@ -469,41 +469,41 @@ var jfObject = function (_Events) {
             var _this3 = this;
 
             if (typeof filter !== 'function') {
-                filter = function () {
+                filter = function (property, value) {
                     (0, _newArrowCheck3.default)(this, _this3);
-                    return true;
+                    return property[0] !== '_' && value !== undefined;
                 }.bind(this);
             }
-            var _result = {};
-            var _iteratorNormalCompletion5 = true;
-            var _didIteratorError5 = false;
-            var _iteratorError5 = undefined;
+            var _transform = function (property, value) {
+                (0, _newArrowCheck3.default)(this, _this3);
 
-            try {
-                for (var _iterator5 = (0, _getIterator3.default)(this), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                    var _property = _step5.value;
-
-                    var _value = this[_property];
-                    if (_value !== undefined && filter(_property, _value)) {
-                        _result[_property] = _value instanceof jfObject ? _value.toJSON(filter) : _value;
+                var _type = typeof value === 'undefined' ? 'undefined' : (0, _typeof3.default)(value);
+                if (_type !== 'function' && filter(property, value)) {
+                    if (value && _type === 'object') {
+                        if (Array.isArray(value) && value.length) {
+                            value = value.map(function (v) {
+                                (0, _newArrowCheck3.default)(this, _this3);
+                                return _transform(property, v);
+                            }.bind(this));
+                        } else {
+                            var _result = {};
+                            for (var _property in value) {
+                                var _value = _transform(_property, value[_property]);
+                                if (_value !== undefined) {
+                                    _result[_property] = _value;
+                                }
+                            }
+                            value = _result;
+                        }
                     }
+                } else {
+                    value = undefined;
                 }
-            } catch (err) {
-                _didIteratorError5 = true;
-                _iteratorError5 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
-                        _iterator5.return();
-                    }
-                } finally {
-                    if (_didIteratorError5) {
-                        throw _iteratorError5;
-                    }
-                }
-            }
 
-            return _result;
+                return value;
+            }.bind(this);
+
+            return _transform('***************', this);
         }
 
         /**
