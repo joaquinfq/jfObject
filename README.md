@@ -9,11 +9,10 @@ Can be used as base class for event-oriented libraries.
 
 ### Objects as parameters
 
-You can pass several objects to constructor and will be
-merged recursively.
+You can pass several objects and will be merged recursively.
 
 ```js
-const obj = new jfObject(
+const obj = new jfObject().assign(
     {
         a : {
             b : 0
@@ -89,7 +88,7 @@ console.log(obj.toJSON()); // { a : { c : 2 } }
 You can use new `ES6` loop `for..of`:
 
 ```js
-const obj = new jfObject(
+const obj = new jfObject().assign(
     {
         a : 1,
         c : 2,
@@ -113,7 +112,7 @@ If you need to split object into keys and values, you can use `split` or `toArra
 
 
 ```js
-const obj = new jfObject(
+const obj = new jfObject().assign(
     {
         a : 1,
         c : 2,

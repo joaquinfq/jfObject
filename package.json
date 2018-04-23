@@ -1,5 +1,5 @@
 {
-    "version": "1.0.3",
+    "version": "2.0.0",
     "name": "jf-object",
     "author": "Joaquín Fernández",
     "description": "Class providing events, dot path syntax for properties, JSON serialization, singletons and more.",
@@ -12,25 +12,18 @@
     ],
     "homepage": "http://www.joaquinfernandez.net",
     "license": "MIT",
-    "main": "jf-object.min.js",
+    "main": "jf-object.js",
     "repository": {
         "type": "git",
         "url": "https://github.com/joaquinfq/jfObject"
     },
     "scripts": {
-        "build": "babel jf-object.mjs -o jf-object.js",
-        "dist": "uglifyjs -c -m reserved=['require','exports','jfObject'] --ie8 jf-object.js -o jf-object.min.js",
-        "test": "node test"
+        "test": "istanbul cover --include-all-sources --print both --report text -x test.js test.js"
     },
     "dependencies": {
-        "babel-runtime": "^6.26.0",
-        "prop-sep": "^1.0.0"
+        "prop-sep": "^2.0.1"
     },
     "devDependencies": {
-        "babel-cli": "^6.26.0",
-        "babel-plugin-transform-class-properties": "^6.24.1",
-        "babel-plugin-transform-runtime": "^6.23.0",
-        "babel-preset-env": "^1.6.1",
-        "uglify-js": "^3.3.21"
+        "istanbul": "^0.4.5"
     }
 }
