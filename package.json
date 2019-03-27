@@ -1,29 +1,29 @@
 {
-    "version": "2.0.0",
-    "name": "jf-object",
+    "version": "3.0.0",
+    "name": "@jf/object",
     "author": "Joaquín Fernández",
-    "description": "Class providing events, dot path syntax for properties, JSON serialization, singletons and more.",
+    "description": "Class providing dot path syntax for properties, JSON serialization, singletons and more.",
     "keywords": [
-        "assign",
         "class",
-        "events",
+        "jf.Object",
         "jfObject",
         "object"
     ],
     "homepage": "http://www.joaquinfernandez.net",
     "license": "MIT",
-    "main": "jf-object.js",
+    "main": "src/Object.js",
     "repository": {
         "type": "git",
         "url": "https://github.com/joaquinfq/jfObject"
-    },
-    "scripts": {
-        "test": "istanbul cover --include-all-sources --print both --report text -x test.js test.js"
     },
     "dependencies": {
         "prop-sep": "^2.0.1"
     },
     "devDependencies": {
-        "istanbul": "^0.4.5"
+        "@jf/tests": "0.0.4",
+        "nyc": "^13.3.0"
+    },
+    "scripts": {
+        "test": "nyc --reporter=text --all --include=src/** jf-tests"
     }
 }
