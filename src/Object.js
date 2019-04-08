@@ -236,7 +236,11 @@ module.exports = class jfObject
      */
     toJSON()
     {
-        return this.serialize();
+        const _json        = {};
+        const _constructor = this.constructor;
+        _constructor.keys(this).forEach(key => _json[key] = _constructor.serialize(this[key]));
+
+        return _json;
     }
 
     /**
@@ -340,6 +344,10 @@ module.exports = class jfObject
             if (Array.isArray(value))
             {
                 value = value.map(this.serialize, this);
+            }
+            else if (value instanceof jfObject)
+            {
+                value = value.toJSON();
             }
             else if (typeof value === 'object')
             {

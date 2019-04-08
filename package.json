@@ -1,5 +1,5 @@
 {
-    "version": "3.0.0",
+    "version": "3.0.1",
     "name": "@jf/object",
     "author": "Joaquín Fernández",
     "description": "Class providing dot path syntax for properties, JSON serialization, singletons and more.",
