@@ -1,14 +1,16 @@
-const jfObject    = require('../src/Object.js');
-const jfTestsUnit = require('@jf/tests/src/type/Unit');
-const params      = [
+import jfTestsUnit from '@jf/tests/src/type/Unit.js';
+import jfObject    from '../src/Object.js';
+
+const params = [
     { a : 10 },
     { b : 20 },
     { c : 30 }
 ];
+
 /**
  * Pruebas unitarias de la clase `jf.Object`.
  */
-module.exports = class jfObjectTest extends jfTestsUnit
+export default class jfObjectTest extends jfTestsUnit
 {
     /**
      * @override
@@ -36,6 +38,72 @@ module.exports = class jfObjectTest extends jfTestsUnit
     }
 
     /**
+     * Pruebas del método `assign`.
+     */
+    testAssign()
+    {
+        class _Class extends jfObject
+        {
+            constructor(...values)
+            {
+                super();
+                Object.assign(this, _defaults);
+                values.forEach(v => this.assign(v));
+            }
+        }
+
+        const _defaults = this.buildDefaults(...params);
+        [ _defaults, null, undefined ].forEach(
+            value => this._assert('', new _Class().assign(value).toJSON(), _defaults)
+        );
+        this._assert(
+            '',
+            new _Class({ dd : 4, ee : 20 }, ...params).toJSON(),
+            Object.assign({}, ...params)
+        );
+    }
+
+    /**
+     * Pruebas del método `assign` usando los setters.
+     */
+    testAssignWithSetter()
+    {
+        class _Class extends jfObject
+        {
+            constructor(...values)
+            {
+                super();
+                Object.assign(this, _defaults);
+                values.forEach(v => this.assign(v));
+            }
+
+            setB(value)
+            {
+            }
+
+            setA(value, property, values)
+            {
+                _self._assert('', value, _values.a);
+                _self._assert('', property, 'a');
+                _self._assert('', values, _values);
+                return value === null
+                    ? null
+                    : 2 * value;
+            }
+        }
+
+        const _self     = this,
+              _defaults = this.buildDefaults(...params),
+              _values   = Object.assign({}, ...params),
+              _class    = new _Class(_values);
+        // setA lo duplica.
+        _values.a *= 2;
+        //  setB devuelve undefined por lo tanto nunca se modifica.
+        _values.b = null;
+        this._assert('', _class.toJSON(), _values);
+    }
+
+    /**
      * Pruebas del constructor.
      */
     testConstructor()
@@ -50,8 +118,8 @@ module.exports = class jfObjectTest extends jfTestsUnit
      */
     testGetHasRemoveSet()
     {
-        const _n   = ['a', 'b', 'c', 'd'];
-        const _a   = {
+        const _n = [ 'a', 'b', 'c', 'd' ];
+        const _a = {
             b : {
                 c : {
                     d : Math.random()
@@ -82,8 +150,8 @@ module.exports = class jfObjectTest extends jfTestsUnit
     testIterator()
     {
         const _length = 10;
-        const _sut    = this.sut;
-        const _keys   = Array.from({ length : _length }).map((_, index) => String.fromCharCode(65 + index));
+        const _sut = this.sut;
+        const _keys = Array.from({ length : _length }).map((_, index) => String.fromCharCode(65 + index));
         _keys.forEach((v, i) => _sut[v] = i);
         let _count = 0;
         for (const _prop of _sut)
@@ -180,72 +248,6 @@ module.exports = class jfObjectTest extends jfTestsUnit
     }
 
     /**
-     * Pruebas del método `setProperties`.
-     */
-    testSetProperties()
-    {
-        class _Class extends jfObject
-        {
-            constructor(...values)
-            {
-                super();
-                Object.assign(this, _defaults);
-                values.forEach(v => this.setProperties(v));
-            }
-        }
-
-        const _defaults = this.buildDefaults(...params);
-        [_defaults, null, undefined].forEach(
-            value => this._assert('', new _Class().setProperties(value).toJSON(), _defaults)
-        );
-        this._assert(
-            '',
-            new _Class({ dd : 4, ee : 20 }, ...params).toJSON(),
-            Object.assign({}, ...params)
-        );
-    }
-
-    /**
-     * Pruebas del método `setProperties` usando los métodos auxiliares `_parse*`.
-     */
-    testSetPropertiesWithParse()
-    {
-        class _Class extends jfObject
-        {
-            constructor(...values)
-            {
-                super();
-                Object.assign(this, _defaults);
-                values.forEach(v => this.setProperties(v));
-            }
-
-            _parseA(value, property, values)
-            {
-                _self._assert('', value, _values.a);
-                _self._assert('', property, 'a');
-                _self._assert('', values, _values);
-                return value === null
-                    ? null
-                    : 2 * value;
-            }
-
-            _parseB(value)
-            {
-            }
-        }
-
-        const _self     = this;
-        const _defaults = this.buildDefaults(...params);
-        const _values   = Object.assign({}, ...params);
-        const _class    = new _Class(_values);
-        // _parseA lo duplica.
-        _values.a *= 2;
-        //  _parseB devuelve undefined por lo tanto nunca se modifica.
-        _values.b       = null;
-        this._assert('', _class.toJSON(), _values);
-    }
-
-    /**
      * Pruebas del método `split`.
      */
     testSplit()
@@ -260,11 +262,11 @@ module.exports = class jfObjectTest extends jfTestsUnit
                     c : 3,
                     d : 4
                 }
-                )
+            )
                 .split(),
             {
-                keys   : ['a', 'b', 'c', 'd'],
-                values : [1, 2, 3, 4]
+                keys   : [ 'a', 'b', 'c', 'd' ],
+                values : [ 1, 2, 3, 4 ]
             }
         );
     }
@@ -309,10 +311,10 @@ module.exports = class jfObjectTest extends jfTestsUnit
     testStaticIsObject()
     {
         const _isObject = jfObject.isObject;
-        ['', 'abc', 0, 1, false, true, [], null, () => null].forEach(
+        [ '', 'abc', 0, 1, false, true, [], null, () => null ].forEach(
             value => this._assert('', _isObject(value), false)
         );
-        [{}, new Date(), new jfObject()].forEach(
+        [ {}, new Date(), new jfObject() ].forEach(
             value => this._assert('', _isObject(value), true)
         );
     }
@@ -338,7 +340,7 @@ module.exports = class jfObjectTest extends jfTestsUnit
                     fn  : () => null
                 }
             ),
-            ['a', 'b', 'c', 'd']
+            [ 'a', 'b', 'c', 'd' ]
         );
     }
 
@@ -410,7 +412,7 @@ module.exports = class jfObjectTest extends jfTestsUnit
      */
     testStaticSerialize()
     {
-        const _sut  = this.sut;
+        const _sut = this.sut;
         const _data = {
             array  : [
                 1,
@@ -459,13 +461,13 @@ module.exports = class jfObjectTest extends jfTestsUnit
                     c : 3,
                     d : 4
                 }
-                )
+            )
                 .toArray(),
             [
-                ['a', 1],
-                ['b', 2],
-                ['c', 3],
-                ['d', 4]
+                [ 'a', 1 ],
+                [ 'b', 2 ],
+                [ 'c', 3 ],
+                [ 'd', 4 ]
             ]
         );
     }
@@ -481,15 +483,15 @@ module.exports = class jfObjectTest extends jfTestsUnit
                 this.sut,
                 {
                     property1  : 1,
-                    property2  : [2, 22],
+                    property2  : [ 2, 22 ],
                     _protected : 3,
                     __private  : 4
                 }
-                )
+            )
                 .toJSON(),
             {
                 property1 : 1,
-                property2 : [2, 22]
+                property2 : [ 2, 22 ]
             }
         );
     }

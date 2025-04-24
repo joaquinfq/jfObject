@@ -1,10 +1,12 @@
-const propSep    = require('prop-sep');
+import propsep from '@jf/prop-sep';
+
 /**
  * Listado de singletons instanciados.
  *
  * @type {object}
  */
 const singletons = {};
+
 /**
  * Clase que aporta las siguientes funcionalidades:
  *
@@ -15,7 +17,7 @@ const singletons = {};
  * @namespace jf
  * @class     jf.Object
  */
-module.exports = class jfObject
+export default class jfObject
 {
     /**
      * Iterador que permite usar un bucle for..of para iterar sobre la instancia.
@@ -25,23 +27,57 @@ module.exports = class jfObject
     [Symbol.iterator]()
     {
         let _current = 0;
-        const _keys  = this.constructor.keys(this);
+        const _keys = this.constructor.keys(this);
 
         return {
             next()
             {
                 const _key = _keys[_current++];
                 return {
-                    done  : _key === undefined,
-                    value : _key
+                    done : _key === undefined, value : _key
                 };
             }
         };
     }
 
+    /**
+     * Constructor de la clase.
+     *
+     * @param {object[]} args Listado de objetos a fusionar con el actual.
+     */
     constructor(...args)
     {
         this.merge(...args);
+    }
+
+    /**
+     * Asigna las propiedades especificadas a la instancia.
+     * Solamente se asignan las propiedades que están definidas en la clase.
+     *
+     * @param {object} values Objecto con las propiedades a aplicar a la instancia.
+     *
+     * @return {this} La instancia actual.
+     */
+    assign(values)
+    {
+        for (const _property of this.constructor.keys(values))
+        {
+            if (_property in this && typeof this[_property] !== 'function')
+            {
+                let _value = values[_property];
+                const setter = 'set' + _property[0].toUpperCase() + _property.substring(1);
+                if (typeof this[setter] === 'function')
+                {
+                    _value = this[setter](_value, _property, values);
+                }
+                if (_value !== undefined)
+                {
+                    this[_property] = _value;
+                }
+            }
+        }
+
+        return this;
     }
 
     /**
@@ -54,9 +90,9 @@ module.exports = class jfObject
      *
      * @see https://github.com/joaquinfq/prop-sep
      */
-    get(path, defValue)
+    get(path, defValue = null)
     {
-        return propSep.get(this, path, defValue);
+        return propsep.get(this, path, defValue);
     }
 
     /**
@@ -70,7 +106,7 @@ module.exports = class jfObject
      */
     has(path)
     {
-        return propSep.has(this, path);
+        return propsep.has(this, path);
     }
 
     /**
@@ -83,7 +119,7 @@ module.exports = class jfObject
     merge(...objs)
     {
         const _constructor = this.constructor;
-        const _isObject    = _constructor.isObject;
+        const _isObject = _constructor.isObject;
         for (const _obj of objs)
         {
             if (_isObject(_obj))
@@ -129,7 +165,7 @@ module.exports = class jfObject
      */
     remove(path)
     {
-        return propSep.remove(this, path);
+        return propsep.remove(this, path);
     }
 
     /**
@@ -154,37 +190,7 @@ module.exports = class jfObject
      */
     set(path, value)
     {
-        propSep.set(this, path, value);
-
-        return this;
-    }
-
-    /**
-     * Asigna las propiedades especificadas a la instancia.
-     * Solamente se asignan las propiedades que están definidas en la clase.
-     *
-     * @param {object} values Objecto con las propiedades a aplicar a la instancia.
-     *
-     * @return {this} La instancia actual.
-     */
-    setProperties(values)
-    {
-        for (const _property of this.constructor.keys(values))
-        {
-            if (_property in this)
-            {
-                let _value    = values[_property];
-                const _parser = '_parse' + _property[0].toUpperCase() + _property.substr(1);
-                if (typeof this[_parser] === 'function')
-                {
-                    _value = this[_parser](_value, _property, values);
-                }
-                if (_value !== undefined && typeof this[_property] !== 'function')
-                {
-                    this[_property] = _value;
-                }
-            }
-        }
+        propsep.set(this, path, value);
 
         return this;
     }
@@ -199,7 +205,7 @@ module.exports = class jfObject
      */
     split()
     {
-        const _keys   = [];
+        const _keys = [];
         const _values = [];
         for (const _prop of this)
         {
@@ -208,8 +214,7 @@ module.exports = class jfObject
         }
 
         return {
-            keys   : _keys,
-            values : _values
+            keys : _keys, values : _values
         };
     }
 
@@ -225,7 +230,7 @@ module.exports = class jfObject
         const _items = [];
         for (const _prop of this)
         {
-            _items.push([_prop, this[_prop]]);
+            _items.push([ _prop, this[_prop] ]);
         }
 
         return _items;
@@ -236,7 +241,7 @@ module.exports = class jfObject
      */
     toJSON()
     {
-        const _json        = {};
+        const _json = {};
         const _constructor = this.constructor;
         _constructor.keys(this).forEach(key => _json[key] = _constructor.serialize(this[key]));
 
@@ -248,7 +253,7 @@ module.exports = class jfObject
      */
     toString()
     {
-        return `[class ${this.constructor.name || '<jf.Object>'}]`;
+        return `[class ${ this.constructor.name || '<jf.Object>' }]`;
     }
 
     /**
@@ -291,9 +296,8 @@ module.exports = class jfObject
     static keys(object)
     {
         return object && typeof object === 'object'
-            ? Object.keys(object).filter(
-                key => key[0] !== '_' && key[0] !== '$' && object[key] !== undefined && typeof object[key] !== 'function'
-            )
+            ? Object.keys(object)
+                .filter(key => key[0] !== '_' && key[0] !== '$' && object[key] !== undefined && typeof object[key] !== 'function')
             : [];
     }
 
@@ -352,9 +356,7 @@ module.exports = class jfObject
             else if (typeof value === 'object')
             {
                 const _obj = {};
-                this.keys(value).forEach(
-                    key => _obj[key] = this.serialize(value[key])
-                );
+                this.keys(value).forEach(key => _obj[key] = this.serialize(value[key]));
                 value = _obj;
             }
         }
